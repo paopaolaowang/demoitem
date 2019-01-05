@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>亡者农药首页</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/node_modules/axios/dist/axios.min.js"></script>
+    <script src="/node_modules/art-template/lib/template-web.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>亡者农药
+        <small>英雄管理器</small>
+    </h1>
+    <hr>
+
+    <div class="clearfix">
+        <a href="add.html" class="btn btn-success pull-right">添加新英雄</a>
+    </div>
+
+    <table class="table table-striped">
+
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>名称</th>
+            <th>性别</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+<script type="text/html" id="template">
+    {{each message v}}
+    <tr>
+        <td>{{v.id}}</td>
+        <td>{{v.name}}</td>
+        <td>{{v.gender}}</td>
+        <td>{{v.ctime}}</td>
+        <td>
+            <a href="info.html?id={{ v.id }}">查看</a>
+            <a href="edit.html?id={{ v.id }}">编辑</a>
+            <a href="http://127.0.0.1:5000/api/delhero?id={{ v.id }}" class="del">删除</a>
+        </td>
+    </tr>
+    {{/each}}
+</script>
+<script>
+    // $(function () {
+    //     $.ajax({
+    //         url:"http://127.0.0.1:5000/api/getheros",
+    //         type:'get',
+    //         success(res){
+    //             if(res.err_code==0){
+    //
+    //                 var html=template('template',res);
+    //                 $('tbody').html(html);
+    //             }
+    //             console.log(res);
+    //             // $('tbody').html(html);
+    //         },
+    //
+    //     })
+    // })
+    var tbody=document.querySelector('tbody');
+    function getHeroList(){
+        axios.get('http://127.0.0.1:5000/api/getheros').then((res)=>{
+            if(res.status&&res.data.err_code==0){
+                var html=template('template',res.data);
+                tbody.innerHTML=html;
+            }
+        })
+    }
+    getHeroList();
+
+    tbody.addEventListener('click',function(e){
+        e.preventDefault();
+        if(confirm("是否确认删除")){
+            if(e.target.localName==='a'&&e.target.innerText==='删除'){
+                let del=e.target;
+                let url=del.getAttribute('href');
+                axios.get(url).then((res)=>{
+                    if(res.status==200&&res.data.err_code==0){
+                        getHeroList();
+                    }else {
+                        console.log(res);
+                        alert('删除英雄失败');
+                    }
+
+                })
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

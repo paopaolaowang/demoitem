@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/node_modules/axios/dist/axios.min.js"></script>
+    <script src="/node_modules/art-template/lib/template-web.js"></script>
+    <title>英雄信息</title>
+</head>
+<body>
+<div class="container">
+    <h1><a href="/">亡者农药</a>
+        <small>查看英雄信息</small>
+    </h1>
+    <hr>
+
+    <div id="info">
+
+    </div>
+
+</div>
+<script type="text/html" id="teml">
+    <p><strong>Id：{{ id }}</strong></p>
+    <p><strong>姓名：{{ name }}</strong></p>
+    <p><strong>性别：{{ gender }}</strong></p>
+    <p><strong>创建时间：{{ ctime }}</strong></p>
+</script>
+<script>
+    var params=new URLSearchParams(location.search);
+    var id=params.get('id');
+    axios.get(`http://127.0.0.1:5000/api/gethero?id=${id}`).then((res)=>{
+        let {status,data,data:{err_code,message}} = res;
+        if(status==200&&err_code==0){
+            document.getElementById('info').innerHTML=template('teml',message[0]);
+        }
+    })
+</script>
+</body>
+</html>
